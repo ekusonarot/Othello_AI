@@ -8,8 +8,8 @@ class Player {
     State* state;
     public:
         void setSide(int);
-        int getSide() { return side; }
-        void setState(State* sp) { state = sp;}
+        int getSide();
+        void setState(State*);
         State* getState() { return state;}
         virtual void Action();
 };
