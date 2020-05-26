@@ -24,11 +24,11 @@ int main()
 
         player1.Action();
 
+
         system("cls");
 
         player2.Action();
 
-        //system("pause");
     }
 
   

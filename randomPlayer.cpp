@@ -9,7 +9,7 @@ void randomPlayer::Action() {
     if (Action[0] != -1) {
         r = int_random(Action);
 
-        getState()->Action(Action[r]/8,Action[r]%8,-1);
+        getState()->Action(Action[r]/8,Action[r]%8,getSide());
     }
     std::cout << Action[0] << std::endl;
 

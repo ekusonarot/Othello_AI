@@ -11,7 +11,7 @@ class Player {
         int getSide();
         void setState(State*);
         State* getState() { return state;}
-        virtual void Action();
+        virtual void Action(){};
 };
 
 inline void Player::setSide(int s) {
