@@ -15,6 +15,6 @@ void randomPlayer::Action() {
 
     getState()->temp_save();
 
-    getState()->showState();
+    if (getMode() == 0) getState()->showState();
 
 }

@@ -16,6 +16,8 @@ int main()
     randomPlayer player1,player2;
     player1.setSide(-1);
     player2.setSide(1);
+    player1.setMode(1);
+    player2.setMode(1);
     player1.setState(&state);
     player2.setState(&state);
     while (state.existZero()){
@@ -30,7 +32,6 @@ int main()
         player2.Action();
 
     }
-
-  
+    state.showState();  
 }
 

@@ -1,7 +1,7 @@
 #ifndef RANDOMPLAYER_HPP
 #define RANDOMPLAYER_HPP
 #include <iostream>
-#include<ctime>//time
+#include <ctime>//time
 #include "Player.hpp"
 
 

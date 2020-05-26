@@ -5,12 +5,15 @@
 
 class Player {
     int side;
+    int mode=0;//0: 通常 1:盤面表示なし
     State* state;
     public:
         void setSide(int);
         int getSide();
         void setState(State*);
-        State* getState() { return state;}
+        State* getState();
+        void setMode(int);
+        int getMode();
         virtual void Action(){};
 };
 
@@ -24,6 +27,18 @@ inline int Player::getSide() {
 
 inline void Player::setState(State* sp) {
     state = sp;
+}
+
+inline State* Player::getState() {
+    return state;
+}
+
+inline void Player::setMode(int m) {
+    mode = m;
+}
+
+inline int Player::getMode() {
+    return mode;
 }
 
 #endif // PLAYER_HPP
