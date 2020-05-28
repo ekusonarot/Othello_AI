@@ -2,43 +2,27 @@
 #define PLAYER_HPP
 #include "State.hpp"
 
+/*
 
+*/
 class Player {
-    int side;
-    int mode=0;//0: 通常 1:盤面表示なし
-    State* state;
     public:
-        void setSide(int);
-        int getSide();
-        void setState(State*);
-        State* getState();
-        void setMode(int);
-        int getMode();
+        int side;
+        int mode=0;//0: 通常 1:盤面表示なし
+        State* state;
+        Player(int,int,State*);
         virtual void Action(){};
 };
 
-inline void Player::setSide(int s) {
+/*
+    int side : 1 or -1
+    int mode : 0 盤面表示あり　　1 盤面表示なし
+    State* state : Stateのアドレス
+*/
+inline Player::Player(int s, int m, State* sp) {
     side = s;
-}
-
-inline int Player::getSide() {
-    return side;
-}
-
-inline void Player::setState(State* sp) {
-    state = sp;
-}
-
-inline State* Player::getState() {
-    return state;
-}
-
-inline void Player::setMode(int m) {
     mode = m;
-}
-
-inline int Player::getMode() {
-    return mode;
+    state = sp;
 }
 
 #endif // PLAYER_HPP

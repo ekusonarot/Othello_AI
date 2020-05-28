@@ -5,33 +5,19 @@
 
 #include "State.hpp"
 #include "randomPlayer.hpp"
-#include "Player.hpp"
+//#include "Player.hpp"
 
 
 int main()
 {
     State state;
-    state.init();
 
-    randomPlayer player1,player2;
-    player1.setSide(-1);
-    player2.setSide(1);
-    player1.setMode(1);
-    player2.setMode(1);
-    player1.setState(&state);
-    player2.setState(&state);
-    while (state.existZero()){
-        
-        system("cls");
-
-        player1.Action();
-
-
-        system("cls");
-
-        player2.Action();
-
+    randomPlayer rPlayer(1,0,&state);  
+    randomPlayer rPlayer2(-1,0,&state);   
+    while(state.existZero(state.get_S())){
+        rPlayer.Action();
+        rPlayer2.Action();
     }
-    state.showState();  
+
 }
 
