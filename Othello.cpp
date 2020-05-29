@@ -5,7 +5,8 @@
 
 #include "State.hpp"
 #include "randomPlayer.hpp"
-//#include "Player.hpp"
+#include "Player.hpp"
+#include "QPlayer.hpp"
 
 
 int main()

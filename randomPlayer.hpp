@@ -15,11 +15,11 @@ class randomPlayer : public Player{
 
 inline int randomPlayer::int_random(int* A) {
     std::srand(time(NULL));
-        int i=0;
-        while (A[i] != -1) {
-            i++;
-        }
-        return rand()%i;
+    int i=0;
+    while (A[i] != -1) {
+        i++;
+    }
+    return rand()%i;
 }
 
 inline void randomPlayer::Action() {

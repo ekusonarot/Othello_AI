@@ -39,7 +39,19 @@ class State {
         int** get_S();
         int** get_second_S();
         int** get_third_S();
+        void copy(int**, int**);
 };
+
+/*
+    copy(): sp1 ←　sp2
+*/
+inline void State::copy(int** sp1, int** sp2) {
+    for (int i=0; i<8; i++) {
+        for (int j=0; j<8; j++) {
+            sp1[i][j] = sp2[i][j];
+        }
+    }
+}
 
 inline State::State() {    
     S = new int*[8];
