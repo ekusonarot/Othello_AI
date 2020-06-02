@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-
+/*
 int main(){
     std::ofstream file("a", std::ios::binary);
     file << 2.5 ;
@@ -15,3 +15,5 @@ int main(){
     std::cout << b << std::endl;
     file1.close();
 }
+*/
+

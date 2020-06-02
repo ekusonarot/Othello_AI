@@ -1,3 +1,2 @@
 compile: Othello.cpp
-	g++ -c Othello.cpp -o Othello.o
-	g++ Othello.o
+	g++ ./*cpp -o Othello -std=c++14

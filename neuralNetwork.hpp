@@ -3,52 +3,104 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <random>
+#include <cassert>
+#include <string>
+#include <sstream>
+#include "CPULayers.hpp"
 
-const int IN_NUM = 128;
-const int HID_1_NUM = 64;
-const int HID_2_NUM = 64;
-const int OUT_NUM = 1;
+static const int IN_NUM = 128;
+static const int HID_1_NUM = 64;
+static const int HID_2_NUM = 64;
+static const int OUT_NUM = 1;
+
+static std::random_device rd;
+static std::mt19937 gen(rd());
+static std::uniform_real_distribution<float> unif(-1.0f, 1.0f);
+
 
 const int ETA = 0.1;
 
 class NN {
-    double w1[HID_1_NUM][IN_NUM+1];
-    double z1[HID_1_NUM];
-    double w2[HID_2_NUM][HID_1_NUM+1];
-    double z2[HID_2_NUM];
-    double w3[OUT_NUM][HID_2_NUM+1];
-    double z3[OUT_NUM];
+    std::vector<float> layer1_weights;
+    std::vector<float> layer1_biases;
+	
+    std::vector<float> layer2_weights;
+    std::vector<float> layer2_biases;
+
+    std::vector<float> layer3_weights;
+    std::vector<float> layer3_biases;
+
     double relu(double);
     double relu_prime(double);
-    public:
-        NN();
-        double eval(int*);
-        double learn(int*,double*);
-        void saveWeight();
+public:
+    NN();
+    double eval(int*);
+    double learn(int*,double*);
+    void saveWeight();
 };
 
 inline NN::NN() {
-    std::ifstream openfile("weight"); 
+
+    std::ifstream openfile("weight");
+
     if (!openfile) {
-        std::cout << "file not opened" << std::endl;
-        system("pause");
-    }else {
-        for (int i=0; i < HID_1_NUM; i++) {
-            for (int j=0; j<IN_NUM+1; j++) {
-                openfile >> w1[i][j];
-            }
+        for (int i = 0; i < IN_NUM * HID_1_NUM; i++) {
+            layer1_weights.push_back(unif(gen));
         }
-        for (int i=0; i < HID_2_NUM; i++) {
-            for (int j=0; j<HID_1_NUM+1; j++) {
-                openfile >> w2[i][j];
-            }
+        for (int i = 0; i < HID_1_NUM; i++) {
+            layer1_biases.push_back(unif(gen));
         }
-        for (int i=0; i < OUT_NUM; i++) {
-            for (int j=0; j<HID_2_NUM+1; j++) {
-                openfile >> w3[i][j];
+
+        for (int i = 0; i < HID_1_NUM * HID_2_NUM; i++) {
+            layer2_weights.push_back(unif(gen));
+        }
+        for (int i = 0; i < HID_2_NUM; i++) {
+            layer2_biases.push_back(unif(gen));
+        }
+
+        for (int i = 0; i < HID_2_NUM * OUT_NUM; i++) {
+            layer3_weights.push_back(unif(gen));
+        }
+        for (int i = 0; i < OUT_NUM; i++) {
+            layer3_biases.push_back(unif(gen));
+        }
+    } else {
+        std::cout << "Found file\n";
+        std::string line;
+        size_t count = 0;
+        while(getline(openfile, line)) {
+            std::stringstream iss(line);
+            float weight;
+            std::vector<float> weights;
+            while(iss >> weight) {
+                weights.emplace_back(weight);
             }
+            if (count == 0) {
+                layer1_weights = std::move(weights);
+            } else if (count == 1) {
+                layer1_biases = std::move(weights);
+            } else if (count == 2) {
+                layer2_weights = std::move(weights);
+            } else if (count == 3) {
+                layer2_biases = std::move(weights);
+            } else if (count == 4) {
+                layer3_weights = std::move(weights);
+            } else if (count == 5) {
+                layer3_biases = std::move(weights);
+            }      
+            count++;
+            assert(count <= 6);
         }
     }
+
+    assert(layer1_weights.size() == IN_NUM    * HID_1_NUM);
+    assert(layer2_weights.size() == HID_1_NUM * HID_2_NUM);
+    assert(layer3_weights.size() == HID_2_NUM * OUT_NUM);
+    assert(layer1_biases.size() == HID_1_NUM);
+    assert(layer2_biases.size() == HID_2_NUM);
+    assert(layer3_biases.size() == OUT_NUM);
 }
 
 inline void NN::saveWeight() {
@@ -57,20 +109,28 @@ inline void NN::saveWeight() {
         std::cout << "file not opened" << std::endl;
         system("pause");
     }else {
-        for (int i=0; i < HID_1_NUM; i++) {
-            for (int j=0; j<IN_NUM+1; j++) {
-                openfile << w1[i][j] << ' ';
-            }
+        for (int i = 0; i < IN_NUM * HID_1_NUM; i++) {
+            openfile << layer1_weights[i] << ' ';
         }
-        for (int i=0; i < HID_2_NUM; i++) {
-            for (int j=0; j<HID_1_NUM+1; j++) {
-                openfile << w2[i][j] << ' ';
-            }
+        openfile << std::endl;
+        for (int i = 0; i < HID_1_NUM; i++) {
+            openfile << layer1_biases[i] << ' ';
         }
-        for (int i=0; i < OUT_NUM; i++) {
-            for (int j=0; j<HID_2_NUM+1; j++) {
-                openfile << w3[i][j] << ' ';
-            }
+        openfile << std::endl;
+        for (int i = 0; i < HID_1_NUM * HID_2_NUM; i++) {
+            openfile << layer2_weights[i] << ' ';
+        }
+        openfile << std::endl;
+        for (int i = 0; i < HID_2_NUM; i++) {
+            openfile << layer2_biases[i] << ' ';
+        }
+        openfile << std::endl;
+        for (int i = 0; i < HID_2_NUM * OUT_NUM; i++) {
+            openfile << layer3_weights[i] << ' ';
+        }
+        openfile << std::endl;
+        for (int i = 0; i < OUT_NUM; i++) {
+            openfile << layer3_biases[i] << ' ';
         }
     }
 }
@@ -90,37 +150,24 @@ inline double NN::relu_prime(double x) {
 */
 inline double NN::eval(int* Input) {
     int i,j;
+    std::vector<float> features;
+    for (int i = 0; i < IN_NUM; ++i) {
+        features.push_back(Input[i]);
+    }
+
     //第1層
-    for (i=0; i<HID_1_NUM; i++) {
-        z1[i] = 0;
-        for (j=0; j<IN_NUM; j++) {
-            z1[i] +=  w1[i][j] * Input[j];
-        }
-        //バイアスユニット
-        z1[i] += w1[i][j];
-        z1[i] = relu(z1[i]);
-    }
+    std::vector<float> layer1_output(HID_1_NUM);
+    FullyConnect::Forward(IN_NUM, HID_1_NUM, features, layer1_weights, layer1_biases, layer1_output, true);
+
     //第2層
-    for (i=0; i<HID_2_NUM; i++) {
-        z2[i] = 0;
-        for (j=0; j<HID_1_NUM; j++) {
-            z2[i] +=  w2[i][j] * z1[j];
-        }
-        //バイアスユニット
-        z2[i] += w2[i][j];
-        z2[i] = relu(z2[i]);
-    }
+    std::vector<float> layer2_output(HID_2_NUM);
+    FullyConnect::Forward(HID_1_NUM, HID_2_NUM, layer1_output, layer2_weights, layer2_biases, layer2_output, true);
+
     //第3層
-    for (i=0; i<OUT_NUM; i++) {
-        z3[i] = 0;
-        for (j=0; j<HID_2_NUM; j++) {
-            z3[i] +=  w3[i][j] * z2[j];
-        }
-        //バイアスユニット
-        z3[i] += w3[i][j];
-        z3[i] = relu(z3[i]);
-    }
-    return z3[i];
+    std::vector<float> layer3_output(OUT_NUM);
+    FullyConnect::Forward(HID_2_NUM, OUT_NUM, layer2_output, layer3_weights, layer3_biases, layer3_output, false);
+
+    return layer3_output[i];
 }
 
 
@@ -133,6 +180,13 @@ inline double NN::eval(int* Input) {
     double z3[OUT_NUM];
 */
 inline double NN::learn(int* Input,double* Toutput) {
+    /*
+    /  使用 pytotch 訓練
+    /  Using pytotch to train the network. The file is at train.py. The dataload is not complate.
+    /*
+
+
+/*
     double delta_w3[OUT_NUM]={0};
     double delta_w2[HID_2_NUM]={0};
     double delta_w1[HID_1_NUM]={0};
@@ -143,7 +197,7 @@ inline double NN::learn(int* Input,double* Toutput) {
     for (int i=0; i<OUT_NUM; i++) {
         error = (z3[i] - Toutput[i])*(z3[i] - Toutput[i]);
     }
-    int j=0;
+	int j=0;
     // w3重み更新
     for (int i=0; i<OUT_NUM; i++) {
         delta_w3[i] = relu_prime(z3[i])*(z3[i]-Toutput[i]);
@@ -179,6 +233,8 @@ inline double NN::learn(int* Input,double* Toutput) {
     }
 
     return error;
+*/
+	return 0.0f;
 }
 
 #endif // NEURALNETWORK_HPP

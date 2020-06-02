@@ -7,9 +7,9 @@
 #include "randomPlayer.hpp"
 #include "Player.hpp"
 #include "QPlayer.hpp"
+#include "neuralNetwork.hpp"
 
-
-int main()
+int main(int argc, char **argv)
 {
     State state;
 
@@ -20,5 +20,7 @@ int main()
         rPlayer2.Action();
     }
 
+
+    return 0;
 }
 
